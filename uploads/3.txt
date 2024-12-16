@@ -1,0 +1,44 @@
+   private async void guna2Button7_Click_1(object sender, EventArgs e)
+   {
+       if (Process.GetProcessesByName("HD-Player").Length == 0)
+       {
+           S.Text = "Emulator Not Found";
+           txt = PID.Text;
+           len = txt.Length;
+           PID.Text = "";
+           timer3.Start();
+           Console.Beep(200, 300);
+
+       }
+       else
+       {
+           // label1.Visible = true;
+           // loading.Start();
+           Int32 proc = Process.GetProcessesByName("HD-Player")[0].Id;
+           memory.OpenProcess(proc);
+           S.Text = "wait to inject aimBOT";
+           var result = await memory.AoBScan("FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 A5 43", true, true);
+           if (result.Any())
+           {
+               foreach (var CurrentAddress in result)
+               {
+                   long Enderecoleitura = CurrentAddress + 104L;
+                   long EndercoEscrita = CurrentAddress + 0x6C;
+                   var Read = memory.ReadMemory<int>(Enderecoleitura.ToString("X"));
+                   memory.WriteMemory(EndercoEscrita.ToString("X"), "int", Read.ToString());
+
+               }
+               S.Text = "AimBOT safe : Activated";
+               Console.Beep(600, 300);
+               // label1.Visible = false;
+               // loading.Stop();
+               f2Pressed = false;
+           }
+           else
+           {
+               // label1.Visible = false;
+               // loading.Stop();
+               S.Text = "AimBOT : Activated..";
+           }
+       }
+   }
